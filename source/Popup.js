@@ -39,7 +39,11 @@ enyo.kind({
 			onyx.Popup.count++;
 			this.applyZIndex();
 		}
-		else {
+		// If the old value of showing is undefined
+		// and we didn't match first if statement then we
+		// are being initialized to false.  That means onyx.Popup.count
+		// was never incremented for this popup and shouldn't be decremented.
+		else if(typeof old !== 'undefined'){
 			if(onyx.Popup.count > 0) {
 				onyx.Popup.count--;
 			}
