@@ -34,9 +34,11 @@ enyo.kind({
 	//* @protected
 	statics: { count: 0 },
 	defaultZ: 120,
-	showingChanged: function() {
+	showingChanged: function(old) {
 		if(this.showing) {
-			onyx.Popup.count++;
+			if(typeof old !== 'undefined')
+				onyx.Popup.count++;
+
 			this.applyZIndex();
 		}
 		// If the old value of showing is undefined
@@ -86,12 +88,12 @@ enyo.kind({
 	findZIndex: function() {
 		// a default z value
 		var z = this.defaultZ;
-		if (this._zIndex) {
-			z = this._zIndex;
-		} else if (this.hasNode()) {
-			// Re-use existing zIndex if it has one
-			z = Number(enyo.dom.getComputedStyleValue(this.node, "z-index")) || z;
-		}
+		// if (this._zIndex) {
+		// 	z = this._zIndex;
+		// } else if (this.hasNode()) {
+		// 	// Re-use existing zIndex if it has one
+		// 	z = Number(enyo.dom.getComputedStyleValue(this.node, "z-index")) || z;
+		// }
 		return (this._zIndex = z);
 	}
 });
