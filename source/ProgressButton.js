@@ -25,7 +25,7 @@ enyo.kind({
 		{name: "progressAnimator", kind: "Animator", onStep: "progressAnimatorStep", onEnd: "progressAnimatorComplete"},
 		{name: "bar", classes: "onyx-progress-bar-bar onyx-progress-button-bar"},
 		{name: "client", classes: "onyx-progress-button-client"},
-		{kind: "onyx.Icon", src: "$lib/onyx/images/progress-button-cancel.png", classes: "onyx-progress-button-icon", ontap: "cancelTap"}
+		{kind: "onyx.Icon", src: "$lib/vendor/onyx/images/progress-button-cancel.png", classes: "onyx-progress-button-icon", ontap: "cancelTap"}
 	],
 	cancelTap: function() {
 		this.doCancel();
