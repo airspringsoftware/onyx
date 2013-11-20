@@ -1,6 +1,6 @@
 /**
-	_onyx.Popup_ is an enhanced [enyo.Popup](http://enyojs.com/api/#enyo.Popup)
-	 with built-in scrim and z-index handling.
+	_onyx.Popup_ is an enhanced [enyo.Popup](#enyo.Popup) with built-in scrim and
+	z-index handling.
 
 	To avoid obscuring popup contents, scrims require the dialog to be floating;
 	otherwise, they won't render. A modal popup will get a transparent scrim
@@ -8,12 +8,11 @@
 	specify _scrim: true, scrimWhenModal: false_.
 
 	For more information, see the documentation on
-	[Popups](https://github.com/enyojs/enyo/wiki/Popups) in the Enyo Developer
-	Guide.
+	[Popups](building-apps/controls/popups.html) in the Enyo Developer Guide.
 */
 enyo.kind({
 	name: "onyx.Popup",
-	kind: "Popup",
+	kind: "enyo.Popup",
 	classes: "onyx-popup",
 	published: {
 		/**
@@ -32,7 +31,10 @@ enyo.kind({
 		scrimClassName: ""
 	},
 	//* @protected
-	statics: { count: 0 },
+	protectedStatics: {
+		count: 0,
+		highestZ: 120
+	},
 	defaultZ: 120,
 	showingChanged: function(old) {
 		if(this.showing) {
@@ -69,7 +71,7 @@ enyo.kind({
 	},
 	getScrimZIndex: function() {
 		// Position scrim directly below popup
-		return this.findZIndex()-1;
+		return onyx.Popup.highestZ >= this._zIndex ? this._zIndex - 1 : onyx.Popup.highestZ;
 	},
 	getScrim: function() {
 		// show a transparent scrim for modal popups if scrimWhenModal is true
@@ -81,19 +83,30 @@ enyo.kind({
 	},
 	applyZIndex: function() {
 		// Adjust the zIndex so that popups will properly stack on each other.
-		this._zIndex = onyx.Popup.count * 2 + this.findZIndex() + 1;
+		this._zIndex = (onyx.Popup.count * 2) + this.findZIndex() + 1;
+		if (this._zIndex <= onyx.Popup.highestZ) {
+			this._zIndex = onyx.Popup.highestZ + 1;
+		}
+		if (this._zIndex > onyx.Popup.highestZ) {
+			onyx.Popup.highestZ = this._zIndex;
+		}
 		// leave room for scrim
 		this.applyStyle("z-index", this._zIndex);
 	},
 	findZIndex: function() {
 		// a default z value
 		var z = this.defaultZ;
-		// if (this._zIndex) {
-		// 	z = this._zIndex;
-		// } else if (this.hasNode()) {
-		// 	// Re-use existing zIndex if it has one
-		// 	z = Number(enyo.dom.getComputedStyleValue(this.node, "z-index")) || z;
-		// }
-		return (this._zIndex = z);
+		//TODO (MG): this was modified upstream @enyo, but James had it commentted out; figure out if it's right
+		if (this._zIndex) {
+			z = this._zIndex;
+		} else if (this.hasNode()) {
+			// Re-use existing zIndex if it has one
+			z = Number(enyo.dom.getComputedStyleValue(this.node, "z-index")) || z;
+		}
+		if (z < this.defaultZ) {
+			z = this.defaultZ;
+		}
+		this._zIndex = z;
+		return this._zIndex;
 	}
 });
